@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.2">
+  <Placemark>
+    <name>Groenlanden</name>
+    <description>Ber Kessels</description>
+    <Point>
+      <coordinates>5.905975,51.870093</coordinates>
+    </Point>
+  </Placemark>
+</kml>

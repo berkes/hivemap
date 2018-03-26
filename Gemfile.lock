@@ -8,6 +8,7 @@ GEM
       erubis (>= 2.6.6)
       rack (>= 0.9.0)
     coderay (1.1.1)
+    database_cleaner (1.6.2)
     erubis (2.7.0)
     event_sourcery (0.17.0)
     event_sourcery-postgres (0.6.0)
@@ -27,6 +28,7 @@ GEM
     rack-test (0.6.3)
       rack (>= 1.0)
     rainbow (3.0.0)
+    rake (12.3.1)
     rubocop (0.54.0)
       parallel (~> 1.10)
       parser (>= 2.5)
@@ -51,10 +53,12 @@ PLATFORMS
 DEPENDENCIES
   awesome_print
   better_errors
+  database_cleaner
   event_sourcery
   event_sourcery-postgres
   minitest
   rack-test
+  rake
   rubocop
   semver
   sinatra

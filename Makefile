@@ -10,12 +10,11 @@ TODAY=$(shell date +%F)
 
 # The first rule in a Makefile is the one executed by default ("make"). It
 # should always be the "all" rule, so that "make" and "make all" are identical.
-all: lint test
+all: test lint
 
 # CUSTOM BUILD RULES
 test:
-	$(CMD_PREFIX) ruby -I test test/**/*_test.rb
-
+	$(CMD_PREFIX) ruby -I lib:test:. -e "Dir.glob('**/*_test.rb') { |f| require(f) }"
 lint:
 	$(CMD_PREFIX) rubocop
 

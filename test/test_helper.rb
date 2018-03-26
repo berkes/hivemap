@@ -1,4 +1,5 @@
 require 'minitest/autorun'
+require 'database_cleaner'
 
 require 'hive_map'
 
@@ -19,5 +20,10 @@ module Minitest
   class Spec
     include RequestHelpers
     include EventHelpers
+
+    before do
+      DatabaseCleaner.strategy = :truncation
+      DatabaseCleaner.clean
+    end
   end
 end

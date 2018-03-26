@@ -2,11 +2,30 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.0)
+    awesome_print (1.8.0)
+    better_errors (2.1.1)
+      coderay (>= 1.0.0)
+      erubis (>= 2.6.6)
+      rack (>= 0.9.0)
+    coderay (1.1.1)
+    erubis (2.7.0)
+    event_sourcery (0.17.0)
+    event_sourcery-postgres (0.6.0)
+      event_sourcery (>= 0.14.0)
+      pg
+      sequel (~> 4.38)
     minitest (5.11.3)
+    mustermann (1.0.2)
     parallel (1.12.1)
     parser (2.5.0.4)
       ast (~> 2.4.0)
+    pg (1.0.0)
     powerpack (0.1.1)
+    rack (2.0.4)
+    rack-protection (2.0.1)
+      rack
+    rack-test (0.6.3)
+      rack (>= 1.0)
     rainbow (3.0.0)
     rubocop (0.54.0)
       parallel (~> 1.10)
@@ -17,15 +36,28 @@ GEM
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-progressbar (1.9.0)
     semver (1.0.1)
+    sequel (4.49.0)
+    sinatra (2.0.1)
+      mustermann (~> 1.0)
+      rack (~> 2.0)
+      rack-protection (= 2.0.1)
+      tilt (~> 2.0)
+    tilt (2.0.8)
     unicode-display_width (1.3.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  awesome_print
+  better_errors
+  event_sourcery
+  event_sourcery-postgres
   minitest
+  rack-test
   rubocop
   semver
+  sinatra
 
 BUNDLED WITH
    1.16.1

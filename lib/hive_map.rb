@@ -6,6 +6,8 @@ require 'sinatra'
 require_relative '../app/events/node_added.rb'
 require_relative '../app/commands/node/add.rb'
 require_relative '../app/aggregates/node.rb'
+require_relative '../app/projections/proposed_nodes.rb'
+require_relative '../app/projections/query.rb'
 
 # Monkey patch
 class Hash
@@ -53,6 +55,13 @@ post '/nodes/:node_id' do
   command = HiveMap::Commands::Node::Add::Command.build(json_params)
   HiveMap::Commands::Node::Add::CommandHandler.new.handle(command)
   status 201
+end
+
+get '/nodes/proposed' do
+  body JSON.pretty_generate(
+    HiveMap::Projections::Proposed::Query.handle
+  )
+  status 200
 end
 
 ## Core namespace for the app

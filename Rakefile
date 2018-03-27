@@ -2,7 +2,6 @@ $LOAD_PATH.unshift '.'
 
 task :environment do
   require 'lib/hive_map'
-  require 'awesome_print'
 end
 
 desc 'Setup Event Stream Processors'

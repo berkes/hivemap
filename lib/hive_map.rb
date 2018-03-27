@@ -31,7 +31,7 @@ configure :development do
   BetterErrors.application_root = __dir__
 end
 
-error Sinatra::Base::UnprocessableEntity do |error|
+error UnprocessableEntity do |error|
   body "Unprocessable Entity: #{error.message}"
   status 422
 end

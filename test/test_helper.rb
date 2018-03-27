@@ -9,6 +9,7 @@ require 'ostruct'
 ENV['RACK_ENV'] = 'test'
 
 require_relative 'support/request_helpers.rb'
+require_relative 'support/time_helpers.rb'
 
 module EventHelpers
   def last_event(aggregate_id)
@@ -20,6 +21,7 @@ module Minitest
   class Spec
     include RequestHelpers
     include EventHelpers
+    include TimeHelpers
 
     before do
       DatabaseCleaner.strategy = :truncation

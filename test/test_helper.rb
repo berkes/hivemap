@@ -17,6 +17,10 @@ module Minitest
     include EventHelpers
     include TimeHelpers
 
+    EventSourcery.configure do |config|
+      config.logger = Logger.new(nil)
+    end
+
     before do
       DatabaseCleaner.strategy = :truncation
       DatabaseCleaner.clean

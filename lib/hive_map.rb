@@ -22,6 +22,7 @@ end
 UnprocessableEntity = Class.new(StandardError)
 BadRequest = Class.new(StandardError)
 
+set :public_folder, 'public'
 # Ensure our error handlers are triggered in development
 set :show_exceptions, :after_handler
 

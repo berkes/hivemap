@@ -1,3 +1,9 @@
+$LOAD_PATH.unshift '.'
+
+task :environment do
+  require 'lib/hive_map'
+end
+
 namespace :db do
   desc 'Create database'
   task create: :environment do

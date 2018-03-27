@@ -19,7 +19,9 @@ lint:
 	$(CMD_PREFIX) rubocop
 
 clean:
-	# noop
+	$(CMD_PREFIX) rake db:drop
+	$(CMD_PREFIX) rake db:create
+	$(CMD_PREFIX) rake db:migrate
 
 ##
 # Set up the project for building

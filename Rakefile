@@ -22,13 +22,13 @@ task run_processors: :environment do
   # The ESPRunner will fork child processes for each of the ESPs passed to it.
   EventSourcery::EventProcessing::ESPRunner.new(
     event_processors: esps,
-    event_source: HiveMap.event_source,
+    event_source: HiveMap.event_source
   ).start!
 end
 
 desc 'Run webserver'
 task run_web: :environment do
-  sh %(bundle exec rackup)
+  sh %(bundle exec rackup -p #{ENV['PORT'] || 9292})
 end
 
 namespace :db do

@@ -39,6 +39,22 @@ describe 'add node' do
                    node_id)
     end
 
+    it 'adds a node to proposed_nodes KML projection' do
+      setup_projectors
+      post_json "/nodes/#{node_id}",
+                lat: lat,
+                lon: lon,
+                author_email: 'harry@example.com',
+                contact_details: 'h.potter@example.com or visit me at home'
+
+      projector_process_event(node_id)
+
+      kml = File.read(File.join('public', 'proposed_nodes.kml'))
+      placemarks = Nokogiri::XML(kml).xpath('//xmlns:Placemark')
+
+      assert_includes("#{lon},#{lat}", placemarks.inner_text.strip!)
+    end
+
     describe 'when the node id already exists' do
       before do
         post_json "/nodes/#{node_id}", lat: lat, lon: lon

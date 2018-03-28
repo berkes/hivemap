@@ -14,8 +14,9 @@ Dir[File.join(__dir__, 'support', '**', '*.rb')].each { |file| require file }
 
 module Minitest
   class Spec
-    include RequestHelpers
     include EventHelpers
+    include FileHelpers
+    include RequestHelpers
     include TimeHelpers
 
     EventSourcery.configure do |config|

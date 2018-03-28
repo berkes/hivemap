@@ -1,5 +1,6 @@
 require 'minitest/autorun'
 require 'database_cleaner'
+require 'byebug'
 
 require 'hive_map'
 

@@ -7,6 +7,7 @@ GEM
       coderay (>= 1.0.0)
       erubis (>= 2.6.6)
       rack (>= 0.9.0)
+    byebug (10.0.1)
     coderay (1.1.1)
     database_cleaner (1.6.2)
     erubis (2.7.0)
@@ -56,6 +57,7 @@ PLATFORMS
 DEPENDENCIES
   awesome_print
   better_errors
+  byebug
   database_cleaner
   event_sourcery
   event_sourcery-postgres

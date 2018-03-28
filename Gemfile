@@ -11,6 +11,8 @@ gem 'semver'
 gem 'sinatra'
 
 group :development, :test do
+  gem 'byebug'
+
   gem 'minitest'
   gem 'rack-test'
 

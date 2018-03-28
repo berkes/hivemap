@@ -6,9 +6,23 @@ module EventHelpers
   end
 
   def projector_process_event(aggregate_id)
-    ## TODO: refactor to avoid harcoding the projectors here.
-    projector = HiveMap::Projections::ProposedNodes::Projector.new
-    projector.setup
-    projector.process(last_event(aggregate_id))
+    projectors.each do |projector|
+      projector.process(last_event(aggregate_id))
+    end
+  end
+
+  def setup_projectors
+    projectors.each(&:setup)
+  end
+
+  protected
+
+  def projectors
+    @projectors = [
+      HiveMap::Projections::ProposedNodes::Projector.new,
+      HiveMap::Projections::ProposedNodesKml::Projector.new(
+        tracker: EventSourcery::Memory::Tracker.new
+      )
+    ]
   end
 end

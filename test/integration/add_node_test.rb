@@ -26,6 +26,7 @@ describe 'add node' do
     end
 
     it 'adds a node to proposed_nodes projection' do
+      setup_projectors
       post_json "/nodes/#{node_id}",
                 lat: lat,
                 lon: lon,

@@ -7,11 +7,15 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 gem 'event_sourcery'
 gem 'event_sourcery-postgres'
 gem 'rake'
+gem 'ruby_kml'
 gem 'semver'
 gem 'sinatra'
 
 group :development, :test do
+  gem 'byebug'
+
   gem 'minitest'
+  gem 'nokogiri'
   gem 'rack-test'
 
   gem 'database_cleaner'

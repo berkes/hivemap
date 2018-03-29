@@ -7,6 +7,7 @@ require_relative '../app/events/node_added.rb'
 require_relative '../app/commands/node/add.rb'
 require_relative '../app/aggregates/node.rb'
 require_relative '../app/projections/proposed_nodes.rb'
+require_relative '../app/projections/proposed_nodes_kml.rb'
 require_relative '../app/projections/query.rb'
 
 # Monkey patch

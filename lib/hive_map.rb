@@ -24,6 +24,7 @@ UnprocessableEntity = Class.new(StandardError)
 BadRequest = Class.new(StandardError)
 
 set :public_folder, 'public'
+set :views, File.join(settings.root, '..', 'app', 'web', 'views')
 # Ensure our error handlers are triggered in development
 set :show_exceptions, :after_handler
 
@@ -53,8 +54,8 @@ def json_params
   ]
 end
 
-get '/' do
-  File.read(File.join('public', 'index.html'))
+get '/', provides: :html do
+  erb :index
 end
 
 post '/nodes/:node_id' do

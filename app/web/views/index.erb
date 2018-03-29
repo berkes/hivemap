@@ -43,10 +43,6 @@
       </div>
       <div class="fourteen wide column">
         <div id="map" class="map"></div>
-        <form>
-          <label>cluster distance</label>
-          <input id="distance" type="range" min="0" max="100" step="1" value="40"/>
-        </form>
       </div>
     </div>
 
@@ -73,7 +69,7 @@
         source: new ol.source.Cluster({
           distance: 40,
           source: new ol.source.Vector({
-            url: 'http://localhost:5000/proposed_nodes.kml',
+            url: '/proposed_nodes.kml',
             format: new ol.format.KML({ extractStyles: false })
           })
         }),

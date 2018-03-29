@@ -53,6 +53,10 @@ def json_params
   ]
 end
 
+get '/' do
+  File.read(File.join('public', 'index.html'))
+end
+
 post '/nodes/:node_id' do
   command = HiveMap::Commands::Node::Add::Command.build(json_params)
   HiveMap::Commands::Node::Add::CommandHandler.new.handle(command)

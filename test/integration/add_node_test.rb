@@ -52,7 +52,7 @@ describe 'add node' do
       kml = File.read(File.join('public', 'proposed_nodes.kml'))
       placemarks = Nokogiri::XML(kml).xpath('//xmlns:Placemark')
 
-      assert_includes("#{lon},#{lat}", placemarks.inner_text.strip!)
+      assert_includes(placemarks.inner_text.strip!, "#{lon},#{lat}")
     end
 
     describe 'when the node id already exists' do

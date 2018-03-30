@@ -1,3 +1,4 @@
+require 'cgi'
 require 'ruby_kml'
 
 module HiveMap
@@ -21,8 +22,7 @@ module HiveMap
 
         process NodeAdded do |event|
           kml_file.objects << KML::Placemark.new(
-            id: event.aggregate_id,
-            name: event.body[:author_email],
+            description: CGI.escapeHTML(event.body['contact_details']),
             geometry: KML::Point.new(
               coordinates: {
                 lat: event.body['lat'],

@@ -22,7 +22,7 @@ module HiveMap
 
         process NodeAdded do |event|
           kml_file.objects << KML::Placemark.new(
-            description: CGI.escapeHTML(event.body['contact_details']),
+            description: simple_format(event.body['contact_details']),
             geometry: KML::Point.new(
               coordinates: {
                 lat: event.body['lat'],
@@ -37,6 +37,10 @@ module HiveMap
 
         def kml_file
           @kml_file ||= KMLFile.parse(File.open(filename, 'r'))
+        end
+
+        def simple_format(string)
+          CGI.escapeHTML(string).gsub(/[\r\n]+/, '<br/>')
         end
       end
     end

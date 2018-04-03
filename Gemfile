@@ -12,9 +12,11 @@ gem 'semver'
 gem 'sinatra'
 
 group :development, :test do
+  gem 'capybara'
   gem 'database_cleaner'
   gem 'minitest'
   gem 'nokogiri'
+  gem 'poltergeist'
   gem 'rack-test'
 
   gem 'rubocop'

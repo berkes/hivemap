@@ -2,6 +2,7 @@ require 'test_helper'
 
 describe HiveMap::Projections::ProposedNodesKml::Projector do
   let(:file) { File.join('public', 'proposed_nodes.kml') }
+  let(:xml_doc) { Nokogiri::XML(File.read(file)) }
   let(:tracker) { Minitest::Mock.new }
   subject do
     HiveMap::Projections::ProposedNodesKml::Projector.new(tracker: tracker)
@@ -40,9 +41,31 @@ describe HiveMap::Projections::ProposedNodesKml::Projector do
       subject.setup
     end
 
-    it 'inserts a PlaceMark' do
+    it 'inserts a PlaceMark point' do
       subject.process(event)
       assert_file_contains(file, '<coordinates>20.02,20.01</coordinates>')
+    end
+
+    it 'inserts a PlaceMark description' do
+      subject.process(event)
+      descriptions = xml_doc.xpath('//xmlns:description')
+      assert_includes(descriptions.text, 'The Nest')
+    end
+
+    it 'sanitizes PlaceMark description' do
+      event.body['contact_details'] = '<h1>My name is "Bond"</h1>'
+      subject.process(event)
+      descriptions = xml_doc.xpath('//xmlns:description')
+      refute_includes(descriptions.text, '<h1>')
+      assert_includes(descriptions.text, '&lt;/h1&gt;')
+      assert_includes(descriptions.text, '&quot;Bond&quot;')
+    end
+
+    it 'converts line endings to br in PlaceMark description' do
+      event.body['contact_details'] = "one\ntwo\rthree"
+      subject.process(event)
+      descriptions = Nokogiri::XML(File.read(file)).xpath('//xmlns:description')
+      assert_includes(descriptions.text, 'one<br/>two<br/>three')
     end
 
     it 'saves a file' do

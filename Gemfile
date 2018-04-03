@@ -12,18 +12,17 @@ gem 'semver'
 gem 'sinatra'
 
 group :development, :test do
-  gem 'byebug'
-
+  gem 'database_cleaner'
   gem 'minitest'
   gem 'nokogiri'
   gem 'rack-test'
-
-  gem 'database_cleaner'
 
   gem 'rubocop'
 
   gem 'awesome_print'
   gem 'better_errors'
+  gem 'byebug'
 
   gem 'foreman'
+  gem 'rerun'
 end

@@ -11,6 +11,9 @@
         height: 600px;
         width: 100%;
       }
+      .ui.item.highlighted {
+        background-color: #ccc;
+      }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
@@ -51,21 +54,6 @@
     </div>
 
     <script type="text/javascript">
-      var isCluster = function(feature) {
-        if (!feature || !feature.get('features')) { 
-          return false; 
-        }
-        return feature.get('features').length > 1;
-      };
-
-      var highlightItemFor = function(feature) {
-        console.log(feature);
-        var thisItem = document.getElementById('item-' + feature.id);
-        if (thisItem) {
-          thisItem.addClass('highlighted');
-        }
-      };
-
       var _styleFunction = function(feature) {
         var size = feature.get('features').length;
         return new ol.style.Style({
@@ -82,17 +70,6 @@
         });
       };
 
-      var handleClickAt = function(pixel) {
-        // TODO: fix grouped features.
-        var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
-          return feature;
-        });
-        if (feature) { // A feature was clicked.
-          highlightItemFor(feature);
-        } else {
-          // TODO: show popup with ADD new.
-        }
-      };
       var raster = new ol.layer.Tile({ source: new ol.source.OSM() });
 
       hives = new ol.source.Cluster({
@@ -116,19 +93,35 @@
         })
       });
 
-      map.on('moveend', function(evt) {
+      var fillSidebar = function(_event) {
         var extent = map.getView().calculateExtent(map.getSize());
         var html = '';
+
         hives.forEachFeatureInExtent(extent, function(cluster) { // Loop over clusters
           features = cluster.get('features');
           for(var i = 0; i < features.length; i++) {
             html += '<div class="ui item"><div class="content"><a class="header">Hive</a><div class="description">' +
-                features[i].get('description') +
-                '</div></div></div>';
+              features[i].get('description') +
+              '</div></div></div>';
 
           }
         });
+
         document.getElementById('items').innerHTML = html;
+      };
+
+      map.on('moveend', function(_evt) { fillSidebar(_evt); });
+      map.on('click', function(evt) {
+        var cluster = map.forEachFeatureAtPixel(evt.pixel, function(cluster) {
+          return cluster;
+        });
+
+        if(cluster) {
+          cluster.get('features').forEach(function(feature) {
+            var element = $(".item .description:contains('"+ feature.get('description') +"')");
+            element.parent().parent().addClass('highlighted');
+          });
+        }
       });
     </script>
   </body>

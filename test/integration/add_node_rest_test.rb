@@ -1,6 +1,6 @@
 require 'test_helper'
 
-describe 'add node' do
+describe 'add node through REST' do
   describe 'POST /nodes/:node_id' do
     let(:node_id) { SecureRandom.uuid }
     let(:lat) { 51.84 }

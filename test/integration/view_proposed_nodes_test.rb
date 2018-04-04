@@ -1,3 +1,5 @@
+require 'test_helper'
+
 describe 'pending nodes' do
   describe 'GET /nodes/proposed' do
     let(:node_id_1) { SecureRandom.uuid }

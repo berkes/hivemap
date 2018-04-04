@@ -11,6 +11,9 @@
         height: 600px;
         width: 100%;
       }
+      .ui.item.highlighted {
+        background-color: #ccc;
+      }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
@@ -45,44 +48,12 @@
         <div id="map" class="map"></div>
       </div>
       <div class="four wide column">
-        <div class="ui divided items">
-          <div class="ui item">
-            <div class="content">
-              <a class="header">Header</a>
-              <div class="description">
-                Lorem Ipsum
-              </div>
-            </div>
-          </div>
-          <div class="ui item">
-            <div class="content">
-              <a class="header">Header</a>
-              <div class="description">
-                Lorem Ipsum
-              </div>
-            </div>
-          </div>
-          <div class="ui item">
-            <div class="content">
-              <a class="header">Header</a>
-              <div class="description">
-                Lorem Ipsum
-              </div>
-            </div>
-          </div>
+        <div id="items" class="ui divided items">
         </div>
       </div>
     </div>
 
     <script type="text/javascript">
-      var highlightItemFor = function(feature) {
-        console.log(feature);
-        var thisItem = document.getElementById('item-' + feature.id);
-        if (thisItem) {
-          thisItem.addClass('highlighted');
-        }
-      };
-
       var _styleFunction = function(feature) {
         var size = feature.get('features').length;
         return new ol.style.Style({
@@ -99,29 +70,19 @@
         });
       };
 
-      var handleClickAt = function(pixel) {
-        // TODO: fix grouped features.
-        var feature = map.forEachFeatureAtPixel(pixel, function(feature) {
-          return feature;
-        });
-        if (feature) { // A feature was clicked.
-          highlightItemFor(feature);
-        } else {
-          // TODO: show popup with ADD new.
-        }
-      };
       var raster = new ol.layer.Tile({ source: new ol.source.OSM() });
 
+      hives = new ol.source.Cluster({
+        distance: 40,
+        source: new ol.source.Vector({
+          url: '/proposed_nodes.kml',
+          format: new ol.format.KML({ extractStyles: false })
+        })
+      });
       vector = new ol.layer.Vector({
-        source: new ol.source.Cluster({
-          distance: 40,
-          source: new ol.source.Vector({
-            url: '/proposed_nodes.kml',
-            format: new ol.format.KML({ extractStyles: false })
-          })
-        }),
+        source: hives,
         style: _styleFunction
-      })
+      });
 
       var map = new ol.Map({
         target: 'map',
@@ -132,14 +93,35 @@
         })
       });
 
-      var extent = map.getView().calculateExtent(map.getSize());
-      console.log(extent);
-      vector.getSource().getSource().forEachFeatureInExtent(extent, function(feature) {
-        console.log(feature.get('description'));
-      });
+      var fillSidebar = function(_event) {
+        var extent = map.getView().calculateExtent(map.getSize());
+        var html = '';
 
+        hives.forEachFeatureInExtent(extent, function(cluster) { // Loop over clusters
+          features = cluster.get('features');
+          for(var i = 0; i < features.length; i++) {
+            html += '<div class="ui item"><div class="content"><a class="header">Hive</a><div class="description">' +
+              features[i].get('description') +
+              '</div></div></div>';
+
+          }
+        });
+
+        document.getElementById('items').innerHTML = html;
+      };
+
+      map.on('moveend', function(_evt) { fillSidebar(_evt); });
       map.on('click', function(evt) {
-        handleClickAt(evt.pixel);
+        var cluster = map.forEachFeatureAtPixel(evt.pixel, function(cluster) {
+          return cluster;
+        });
+
+        if(cluster) {
+          cluster.get('features').forEach(function(feature) {
+            var element = $(".item .description:contains('"+ feature.get('description') +"')");
+            element.parent().parent().addClass('highlighted');
+          });
+        }
       });
     </script>
   </body>

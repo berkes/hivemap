@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    addressable (2.5.2)
+      public_suffix (>= 2.0.2, < 4.0)
     ast (2.4.0)
     awesome_print (1.8.0)
     better_errors (2.1.1)
@@ -9,6 +11,14 @@ GEM
       rack (>= 0.9.0)
     builder (3.2.3)
     byebug (10.0.1)
+    capybara (2.18.0)
+      addressable
+      mini_mime (>= 0.1.3)
+      nokogiri (>= 1.3.3)
+      rack (>= 1.0.0)
+      rack-test (>= 0.5.4)
+      xpath (>= 2.0, < 4.0)
+    cliver (0.3.2)
     coderay (1.1.1)
     database_cleaner (1.6.2)
     erubis (2.7.0)
@@ -24,6 +34,7 @@ GEM
       rb-fsevent (~> 0.9, >= 0.9.4)
       rb-inotify (~> 0.9, >= 0.9.7)
       ruby_dep (~> 1.2)
+    mini_mime (1.0.0)
     mini_portile2 (2.3.0)
     minitest (5.11.3)
     mustermann (1.0.2)
@@ -33,7 +44,12 @@ GEM
     parser (2.5.0.4)
       ast (~> 2.4.0)
     pg (1.0.0)
+    poltergeist (1.17.0)
+      capybara (~> 2.1)
+      cliver (~> 0.3.1)
+      websocket-driver (>= 0.2.0)
     powerpack (0.1.1)
+    public_suffix (3.0.2)
     rack (2.0.4)
     rack-protection (2.0.1)
       rack
@@ -68,6 +84,11 @@ GEM
     thor (0.19.4)
     tilt (2.0.8)
     unicode-display_width (1.3.0)
+    websocket-driver (0.7.0)
+      websocket-extensions (>= 0.1.0)
+    websocket-extensions (0.1.3)
+    xpath (3.0.0)
+      nokogiri (~> 1.8)
 
 PLATFORMS
   ruby
@@ -76,12 +97,14 @@ DEPENDENCIES
   awesome_print
   better_errors
   byebug
+  capybara
   database_cleaner
   event_sourcery
   event_sourcery-postgres
   foreman
   minitest
   nokogiri
+  poltergeist
   rack-test
   rake
   rerun

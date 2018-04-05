@@ -40,7 +40,7 @@ module HiveMap
         end
 
         def simple_format(string)
-          CGI.escapeHTML(string).gsub(/[\r\n]+/, '<br/>')
+          CGI.escapeHTML(string.to_s).gsub(/[\r\n]+/, '<br/>').strip
         end
       end
     end

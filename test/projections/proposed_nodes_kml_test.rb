@@ -52,6 +52,13 @@ describe HiveMap::Projections::ProposedNodesKml::Projector do
       assert_includes(descriptions.text, 'The Nest')
     end
 
+    it 'allows empty PlaceMark description' do
+      event.body['contact_details'] = nil
+      subject.process(event)
+      descriptions = xml_doc.xpath('//xmlns:description')
+      assert_empty(descriptions.text)
+    end
+
     it 'sanitizes PlaceMark description' do
       event.body['contact_details'] = '<h1>My name is "Bond"</h1>'
       subject.process(event)

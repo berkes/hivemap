@@ -14,8 +14,10 @@ module HiveMap
           column :node_id, 'UUID NOT NULL'
           column :lat, BigDecimal, size: [10, 7] # TODO: move to postgis?
           column :lon, BigDecimal, size: [10, 7]
+          column :name, :text
           column :author_email, :text
           column :contact_details, :text
+          column :amount, Integer
           column :proposed_at, DateTime
         end
 
@@ -27,8 +29,10 @@ module HiveMap
             node_id: event.aggregate_id,
             lat: event.body['lat'],
             lon: event.body['lon'],
+            name: event.body['name'],
             author_email: event.body['author_email'],
             contact_details: event.body['contact_details'],
+            amount: event.body['amount'].to_i,
             proposed_at: Time.now
           )
         end

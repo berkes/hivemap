@@ -17,16 +17,31 @@ module HiveMap
               :node_id,
               :lat,
               :lon,
+              :name,
               :author_email,
-              :contact_details
+              :contact_details,
+              :amount
             )
             @aggregate_id = payload.delete(:node_id)
           end
 
           def validate
             raise BadRequest, 'node_id is blank' unless aggregate_id
-            raise BadRequest, 'lat is blank' unless payload[:lat]
-            raise BadRequest, 'lon is blank' unless payload[:lon]
+            %i[lat lon name author_email amount].each do |required_param|
+              unless payload[required_param]
+                raise BadRequest, "#{required_param} is blank"
+              end
+            end
+
+            raise BadRequest, 'amount must be between 1 and 100' unless
+              valid_amount?(payload[:amount])
+          end
+
+          private
+
+          def valid_amount?(amount)
+            amount = amount.to_i
+            (1..100).cover?(amount)
           end
         end
 

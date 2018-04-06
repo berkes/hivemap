@@ -58,10 +58,8 @@ get '/', provides: :html do
   erb :index
 end
 
-post '/nodes/:node_id' do
-  command = HiveMap::Commands::Node::Add::Command.build(json_params)
-  HiveMap::Commands::Node::Add::CommandHandler.new.handle(command)
-  status 201
+get '/nodes/new' do
+  erb :nodes_new
 end
 
 get '/nodes/proposed' do
@@ -69,6 +67,12 @@ get '/nodes/proposed' do
     HiveMap::Projections::Proposed::Query.handle
   )
   status 200
+end
+
+post '/nodes/:node_id' do
+  command = HiveMap::Commands::Node::Add::Command.build(json_params)
+  HiveMap::Commands::Node::Add::CommandHandler.new.handle(command)
+  status 201
 end
 
 ## Core namespace for the app

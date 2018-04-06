@@ -48,5 +48,33 @@ describe HiveMap::Commands::Node::Add::Command do
         end
       end
     end
+
+    describe 'without an amount' do
+      before { params.delete(:amount) }
+
+      it 'raises as error' do
+        assert_raises(BadRequest, 'amount is blank') { subject.build(params) }
+      end
+    end
+
+    describe 'with a too large amount' do
+      before { params[:amount] = 101 }
+
+      it 'raises as error' do
+        assert_raises(BadRequest, 'amount must be between 1 and 100') do
+          subject.build(params)
+        end
+      end
+    end
+
+    describe 'with a too small amount' do
+      before { params[:amount] = 0 }
+
+      it 'raises as error' do
+        assert_raises(BadRequest, 'amount must be between 1 and 100') do
+          subject.build(params)
+        end
+      end
+    end
   end
 end

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link rel="stylesheet" href="/semantic/semantic.min.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
+    <style>
+      .map {
+        height: 280px;
+        width: 280px;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+    <script src="/semantic/semantic.min.js"></script>
+    <script src="https://openlayers.org/en/v4.6.5/build/ol.js" type="text/javascript"></script>
+
+  </head>
+  <body>
+    <div class="ui grid container">
+      <div class="fourteen wide column">
+        <a href="/">
+        <h1 class="ui header">
+            <img class="ui image" src="http://via.placeholder.com/70x70">
+          <div class="content">Bijenkasten
+            <div class="sub header">Add hive</div>
+          </div>
+        </h1>
+        </a>
+      </div>
+
+      <div class="four wide column">
+          <div id="map" class="map"></div>
+      </div>
+      <div class="ten wide column">
+        <div class="ui success message transition hidden">
+          <i class="close icon"></i>
+          <div class="header">
+            Hive submitted successfully.
+          </div>
+          <p>It will be reviewed and published soon.</p>
+        </div>
+        <div class="ui error message transition hidden">
+          <i class="close icon"></i>
+          <div class="header">
+            Hive was not submitted because of an error:
+          </div>
+          <p class="message"></p>
+        </div>
+
+        <form class="ui form" id="new-node">
+          <div class="field required">
+            <label for="email">E-mail where moderators can contact you.</label>
+            <input id="email" name="email" placeholder="imker@example.com" type="email">
+          </div>
+
+          <div class="field required">
+            <label for="name">Naam of korte omschrijving.</label>
+            <input id="name" name="name" placeholder="Immehof Den Bloemenweide" type="text">
+          </div>
+
+          <div class="field">
+            <label for="contact_details">Publieke contactinformatie (optioneel).</label>
+            <textarea id="contact_details" name="contact_details" rows="2"></textarea>
+          </div>
+
+          <div class="four wide field required">
+            <label for="amount">Aantal Kasten op deze plek</label>
+            <input id="amount" name="amount" type="number" value="1" min="1" max="100">
+          </div>
+
+
+          <button class="ui button" type="submit">Submit</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      var clearMessages = function() {
+        $('.message').transition('hide');
+      };
+      var toggleMessage = function(element, message) {
+        element.transition('fade');
+        if (message !== undefined) {
+          element.find('p.message').innerHTML = message;
+        }
+      };
+      $('.message .close').on('click', function() {
+        toggleMessage($(this).closest('.message'));
+      });
+
+      var uuidv4 = function () {
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+          (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
+      };
+
+      var handleError = function(data) {
+        toggleMessage($('.message.error'), data.responseText);
+        console.log('error');
+      };
+      var handleSuccess = function(data) {
+        $('form').form('clear');
+        toggleMessage($('.message.success'));
+        console.log('success');
+      };
+
+      $('form#new-node').submit( function(evt) {
+        clearMessages();
+        evt.preventDefault();
+
+        var url = new URL(window.location.href);
+        payload = {
+          author_email: $('input#email')[0].value,
+          contact_details: $('textarea#contact_details')[0].value,
+          name: $('input#name')[0].value,
+          amount: $('input#amount')[0].value,
+          lat: url.searchParams.get('lat'),
+          lon: url.searchParams.get('lon')
+        }
+        var id = uuidv4();
+
+        $.ajax({
+          url: '/nodes/' + id,
+          type: 'post',
+          dataType: 'text',
+          data: JSON.stringify(payload),
+          success: function(data) {
+            handleSuccess(data);
+          },
+          error: function(data) {
+            handleError(data);
+          }
+        });
+      });
+
+      var url = new URL(window.location.href);
+      var coords = [parseFloat(url.searchParams.get('lon')), parseFloat(url.searchParams.get('lat'))];
+      var chosenPoint = new ol.geom.Point(ol.proj.transform(coords, 'EPSG:4326', 'EPSG:3857'));
+      console.log(chosenPoint);
+
+      var iconFeature = new ol.Feature({
+        geometry: chosenPoint
+      });
+
+      var map = new ol.Map({
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          }),
+          new ol.layer.Vector({
+            source: new ol.source.Vector({
+             features: [iconFeature]
+            }),
+          })
+        ],
+        target: 'map',
+        view: new ol.View({
+          center:ol.proj.fromLonLat(coords),
+          zoom: 15
+        })
+      });
+
+    </script>
+  </body>
+</html>
+

@@ -14,6 +14,48 @@
       .ui.item.highlighted {
         background-color: #ccc;
       }
+      .ol-popup {
+        position: absolute;
+        background-color: white;
+        -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+        filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #cccccc;
+        bottom: 12px;
+        left: -50px;
+        min-width: 280px;
+      }
+      .ol-popup:after, .ol-popup:before {
+        top: 100%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+      }
+      .ol-popup:after {
+        border-top-color: white;
+        border-width: 10px;
+        left: 48px;
+        margin-left: -10px;
+      }
+      .ol-popup:before {
+        border-top-color: #cccccc;
+        border-width: 11px;
+        left: 48px;
+        margin-left: -11px;
+      }
+      .ol-popup-closer {
+        text-decoration: none;
+        position: absolute;
+        top: 2px;
+        right: 8px;
+      }
+      .ol-popup-closer:after {
+        content: "✖";
+      }
     </style>
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"
@@ -24,36 +66,58 @@
   </head>
   <body>
     <div class="ui grid container">
-      <div class="twelve wide column">
+      <div class="fourteen wide column">
         <h1 class="ui header">
-          <img class="ui image" src="http://via.placeholder.com/70x70">
+          <a href="/">
+            <img class="ui image" src="http://via.placeholder.com/70x70">
+          </a>
           <div class="content">Bijenkasten
             <div class="sub header">Waar staan bijenkasten in regio Nijmegen</div>
           </div>
         </h1>
       </div>
-      <div class="four wide column">
-        <div class="ui compact menu">
-          <div class="ui right simple dropdown item">
-            Bewerken
-            <i class="dropdown icon"></i>
-            <div class="menu">
-              <a class="item">Toevoegen</a>
-              <a class="item">Contact</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="ten wide column">
+      <div class="fourteen wide column">
         <div id="map" class="map"></div>
-      </div>
-      <div class="four wide column">
-        <div id="items" class="ui divided items">
+        <div id="popup" class="ol-popup">
+          <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+          <div class="content">
+            <ul class="ui list" id="hives-list"></ul>
+            <a href="" id="popup-link">Add hive</a>
+          </div>
         </div>
       </div>
     </div>
 
     <script type="text/javascript">
+      /**
+       * Elements that make up the popup.
+       */
+      var container = document.getElementById('popup');
+      var link = document.getElementById('popup-link');
+      var list = document.getElementById('hives-list');
+      var closer = document.getElementById('popup-closer');
+
+      /**
+       * Create an overlay to anchor the popup to the map.
+       */
+      var popupOverlay = new ol.Overlay({
+        element: container,
+        autoPan: true,
+        autoPanAnimation: {
+          duration: 250
+        }
+      });
+
+      /**
+       * Add a click handler to hide the popup.
+       * @return {boolean} Don't follow the href.
+       */
+      closer.onclick = function() {
+        popupOverlay.setPosition(undefined);
+        closer.blur();
+        return false;
+      };
+
       var _styleFunction = function(feature) {
         var size = feature.get('features').length;
         return new ol.style.Style({
@@ -71,15 +135,15 @@
       };
 
       var raster = new ol.layer.Tile({ source: new ol.source.OSM() });
-
-      hives = new ol.source.Cluster({
+      var hives = new ol.source.Cluster({
         distance: 40,
         source: new ol.source.Vector({
           url: '/proposed_nodes.kml',
           format: new ol.format.KML({ extractStyles: false })
         })
       });
-      vector = new ol.layer.Vector({
+
+      var vector = new ol.layer.Vector({
         source: hives,
         style: _styleFunction
       });
@@ -87,41 +151,43 @@
       var map = new ol.Map({
         target: 'map',
         layers: [raster, vector],
+        overlays: [popupOverlay],
         view: new ol.View({
           center: ol.proj.fromLonLat([5.859690,51.841832]),
           zoom: 12
         })
       });
 
-      var fillSidebar = function(_event) {
-        var extent = map.getView().calculateExtent(map.getSize());
-        var html = '';
-
-        hives.forEachFeatureInExtent(extent, function(cluster) { // Loop over clusters
-          features = cluster.get('features');
-          for(var i = 0; i < features.length; i++) {
-            html += '<div class="ui item"><div class="content"><a class="header">Hive</a><div class="description">' +
-              features[i].get('description') +
-              '</div></div></div>';
-
-          }
-        });
-
-        document.getElementById('items').innerHTML = html;
-      };
-
-      map.on('moveend', function(_evt) { fillSidebar(_evt); });
       map.on('click', function(evt) {
+        var coordinate = evt.coordinate;
+        var lonLat = ol.proj.toLonLat(coordinate);
+        link.href = '/nodes/new?lat='+ lonLat[1] +'&lon='+ lonLat[0];
+
+        list.innerHTML = "";
+
         var cluster = map.forEachFeatureAtPixel(evt.pixel, function(cluster) {
           return cluster;
         });
 
+        var hist = {};
         if(cluster) {
-          cluster.get('features').forEach(function(feature) {
-            var element = $(".item .description:contains('"+ feature.get('description') +"')");
-            element.parent().parent().addClass('highlighted');
+          cluster.get('features').forEach( function(feature) {
+            name = feature.get('name');
+            if (name in hist) {
+              hist[name] ++;
+            }
+            else {
+              hist[name] = 1;
+            }
+          });
+
+          Object.keys(hist).forEach(function(key) {
+            list.innerHTML += '<div class="item"><i class="map marker icon"></i>' +
+              '<div class="content"><a class="header">'+ key +' (' + hist[key] + ')</a></div>' +
+              '</div>';
           });
         }
+        popupOverlay.setPosition(coordinate);
       });
     </script>
   </body>

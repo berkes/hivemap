@@ -10,6 +10,7 @@ gem 'rake'
 gem 'ruby_kml'
 gem 'semver'
 gem 'sinatra'
+gem 'aws-sdk-s3', '~> 1'
 
 group :development, :test do
   gem 'capybara'

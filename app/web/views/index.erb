@@ -142,7 +142,7 @@
       var hives = new ol.source.Cluster({
         distance: 40,
         source: new ol.source.Vector({
-          url: '/proposed_nodes.kml',
+          url: 'https://s3.eu-central-1.amazonaws.com/hivemap/proposed_nodes.kml',
           format: new ol.format.KML({ extractStyles: false })
         })
       });

@@ -35,7 +35,7 @@ module HiveMap
             )
           end
           kml_file.save(filename)
-          upload_file(filename)
+          upload_file(kml_file.render)
         end
 
         private
@@ -48,14 +48,14 @@ module HiveMap
           CGI.escapeHTML(string.to_s).gsub(/[\r\n]+/, '<br/>').strip
         end
 
-        def upload_file(filename)
+        def upload_file(body)
           s3 = Aws::S3::Client.new
-          s3.put_object({
+          s3.put_object(
             acl: 'public-read',
-            body: File.read(filename),
+            body: body,
             bucket: 'hivemap',
             key: 'proposed_nodes.kml'
-          })
+          )
         end
       end
     end

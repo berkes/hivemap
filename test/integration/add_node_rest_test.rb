@@ -7,6 +7,7 @@ describe 'add node through REST' do
       {
         lat: 51.84,
         lon: 5.86,
+        name: 'Hogwarts Hives',
         author_email: 'harry@example.com',
         contact_details: 'h.potter@example.com or visit me at home',
         amount: 1
@@ -23,6 +24,7 @@ describe 'add node through REST' do
         last_event(node_id).body,
         'lat' => 51.84,
         'lon' => 5.86,
+        'name' => 'Hogwarts Hives',
         'author_email' => 'harry@example.com',
         'contact_details' => 'h.potter@example.com or visit me at home',
         'amount' => 1

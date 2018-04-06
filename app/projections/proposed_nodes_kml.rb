@@ -24,6 +24,7 @@ module HiveMap
           event.body['amount'].to_i.times do
             kml_file.objects << KML::Placemark.new(
               description: simple_format(event.body['contact_details']),
+              name: simple_format(event.body['name']),
               geometry: KML::Point.new(
                 coordinates: {
                   lat: event.body['lat'],

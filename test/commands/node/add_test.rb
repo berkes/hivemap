@@ -49,6 +49,14 @@ describe HiveMap::Commands::Node::Add::Command do
       end
     end
 
+    describe 'without a name' do
+      before { params.delete(:name) }
+
+      it 'raises as error' do
+        assert_raises(BadRequest, 'name is blank') { subject.build(params) }
+      end
+    end
+
     describe 'without an amount' do
       before { params.delete(:amount) }
 

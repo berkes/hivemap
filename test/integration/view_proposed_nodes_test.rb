@@ -28,7 +28,7 @@ describe 'pending nodes' do
     end
     let(:projector) { HiveMap::Projections::ProposedNodes::Projector.new }
 
-    it 'returns a list of outstanding Nodes' do
+    it 'returns a list of proposed Nodes' do
       projector.setup
 
       events.each do |event|

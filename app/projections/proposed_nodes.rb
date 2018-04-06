@@ -16,6 +16,7 @@ module HiveMap
           column :lon, BigDecimal, size: [10, 7]
           column :author_email, :text
           column :contact_details, :text
+          column :amount, Integer
           column :proposed_at, DateTime
         end
 
@@ -29,6 +30,7 @@ module HiveMap
             lon: event.body['lon'],
             author_email: event.body['author_email'],
             contact_details: event.body['contact_details'],
+            amount: event.body['amount'].to_i,
             proposed_at: Time.now
           )
         end

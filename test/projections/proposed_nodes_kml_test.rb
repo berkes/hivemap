@@ -28,7 +28,8 @@ describe HiveMap::Projections::ProposedNodesKml::Projector do
           lat: 20.01,
           lon: 20.02,
           author_email: 'ronweasly@example.com',
-          contact_details: 'The Nest'
+          contact_details: 'The Nest',
+          amount: 1
         }
       )
     end
@@ -44,6 +45,13 @@ describe HiveMap::Projections::ProposedNodesKml::Projector do
     it 'inserts a PlaceMark point' do
       subject.process(event)
       assert_file_contains(file, '<coordinates>20.02,20.01</coordinates>')
+    end
+
+    it 'inserts amount times, this PlaceMark point' do
+      event.body['amount'] = 2
+      subject.process(event)
+      descriptions = xml_doc.xpath('//xmlns:description')
+      assert_equal(2, descriptions.length)
     end
 
     it 'inserts a PlaceMark description' do

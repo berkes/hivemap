@@ -21,15 +21,17 @@ module HiveMap
         end
 
         process NodeAdded do |event|
-          kml_file.objects << KML::Placemark.new(
-            description: simple_format(event.body['contact_details']),
-            geometry: KML::Point.new(
-              coordinates: {
-                lat: event.body['lat'],
-                lng: event.body['lon']
-              }
+          event.body['amount'].to_i.times do
+            kml_file.objects << KML::Placemark.new(
+              description: simple_format(event.body['contact_details']),
+              geometry: KML::Point.new(
+                coordinates: {
+                  lat: event.body['lat'],
+                  lng: event.body['lon']
+                }
+              )
             )
-          )
+          end
           kml_file.save(filename)
         end
 

@@ -49,7 +49,7 @@ module HiveMap
         end
 
         def upload_file(body)
-          s3 = Aws::S3::Client.new(s3_region: ENV['AWS_REGION'])
+          s3 = Aws::S3::Client.new(region: ENV['AWS_REGION'])
           s3.put_object(
             acl: 'public-read',
             body: body,

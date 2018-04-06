@@ -4,8 +4,19 @@ describe HiveMap::Commands::Node::Add::Command do
   describe '.build' do
     subject { HiveMap::Commands::Node::Add::Command }
 
+    let(:params) do
+      {
+        node_id: SecureRandom.uuid,
+        lat: 10,
+        lon: 10,
+        author_email: 'harry@example.com',
+        name: 'Hogwards Hyves',
+        amount: 1
+      }
+    end
+
     describe 'without a node_id' do
-      let(:params) { { lat: 10, lon: 10 } }
+      before { params.delete(:node_id) }
 
       it 'raises as error' do
         assert_raises(BadRequest, 'todo_id is blank') { subject.build(params) }
@@ -13,7 +24,7 @@ describe HiveMap::Commands::Node::Add::Command do
     end
 
     describe 'without a lat' do
-      let(:params) { { node_id: SecureRandom.uuid, lon: 10 } }
+      before { params.delete(:lat) }
 
       it 'raises as error' do
         assert_raises(BadRequest, 'lat is blank') { subject.build(params) }
@@ -21,10 +32,20 @@ describe HiveMap::Commands::Node::Add::Command do
     end
 
     describe 'without a lon' do
-      let(:params) { { node_id: SecureRandom.uuid, lat: 10 } }
+      before { params.delete(:lon) }
 
       it 'raises as error' do
         assert_raises(BadRequest, 'lon is blank') { subject.build(params) }
+      end
+    end
+
+    describe 'without an author_email' do
+      before { params.delete(:author_email) }
+
+      it 'raises as error' do
+        assert_raises(BadRequest, 'author_email is blank') do
+          subject.build(params)
+        end
       end
     end
   end

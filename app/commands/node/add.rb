@@ -25,8 +25,11 @@ module HiveMap
 
           def validate
             raise BadRequest, 'node_id is blank' unless aggregate_id
-            raise BadRequest, 'lat is blank' unless payload[:lat]
-            raise BadRequest, 'lon is blank' unless payload[:lon]
+            %i[lat lon author_email].each do |required_param|
+              unless payload[required_param]
+                raise BadRequest, "#{required_param} is blank"
+              end
+            end
           end
         end
 

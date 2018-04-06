@@ -57,11 +57,11 @@ describe 'add node through REST' do
 
     describe 'when the node id already exists' do
       before do
-        post_json "/nodes/#{node_id}", lat: lat, lon: lon
+        post_json "/nodes/#{node_id}", lat: lat, lon: lon, author_email: 'mail'
       end
 
       it 'returns unprocessable entity' do
-        post_json "/nodes/#{node_id}", lat: lat, lon: lon
+        post_json "/nodes/#{node_id}", lat: lat, lon: lon, author_email: 'mail'
 
         assert_equal(422, last_response.status)
         assert_equal(

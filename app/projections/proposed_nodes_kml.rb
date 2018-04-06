@@ -1,5 +1,6 @@
 require 'cgi'
 require 'ruby_kml'
+require 'aws-sdk-s3'
 
 module HiveMap
   module Projections
@@ -34,6 +35,7 @@ module HiveMap
             )
           end
           kml_file.save(filename)
+          upload_file(filename)
         end
 
         private
@@ -44,6 +46,16 @@ module HiveMap
 
         def simple_format(string)
           CGI.escapeHTML(string.to_s).gsub(/[\r\n]+/, '<br/>').strip
+        end
+
+        def upload_file(filename)
+          s3 = Aws::S3::Client.new
+          s3.put_object({
+            acl: 'public-read',
+            body: File.read(filename),
+            bucket: 'hivemap',
+            key: 'proposed_nodes.kml'
+          })
         end
       end
     end

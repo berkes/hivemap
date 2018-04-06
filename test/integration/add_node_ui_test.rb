@@ -10,19 +10,19 @@ class AddNodeUITest < Minitest::JsTest
     visit '/'
     page.driver.click(575, 408)
 
-    assert page.has_link?('Add hive')
+    assert page.has_link?('Kast indienen')
     link = page.find('a#popup-link')
     assert_match %r{/nodes/new\?lat=[\d.]*&lon=[\d.]*}, link[:href]
 
     link.click
-    assert_text('Add hive')
+    assert_text('Nieuwe kast toevoegen')
   end
 
   it 'nodes/new form submits a minimal node' do
     visit '/nodes/new?lat=51.86652806229796&lon=5.839233398437499'
 
     fill_in 'E-mail', with: 'harry@example.com'
-    click_button 'Submit'
+    click_button 'Indienen'
 
     skip('TODO: find out why the show/hide JS does not trigger when testing')
     page.find('ui.message.success').assert_text('Hive submitted successfully.')

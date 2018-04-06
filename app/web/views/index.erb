@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link rel="stylesheet" href="semantic/semantic.min.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
+    <style>
+      .map {
+        height: 600px;
+        width: 100%;
+      }
+      .ui.item.highlighted {
+        background-color: #ccc;
+      }
+      .ol-popup {
+        position: absolute;
+        background-color: white;
+        -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+        filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+        padding: 15px;
+        border-radius: 10px;
+        border: 1px solid #cccccc;
+        bottom: 12px;
+        left: -50px;
+        min-width: 280px;
+      }
+      .ol-popup:after, .ol-popup:before {
+        top: 100%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+      }
+      .ol-popup:after {
+        border-top-color: white;
+        border-width: 10px;
+        left: 48px;
+        margin-left: -10px;
+      }
+      .ol-popup:before {
+        border-top-color: #cccccc;
+        border-width: 11px;
+        left: 48px;
+        margin-left: -11px;
+      }
+      .ol-popup-closer {
+        text-decoration: none;
+        position: absolute;
+        top: 2px;
+        right: 8px;
+      }
+      .ol-popup-closer:after {
+        content: "✖";
+      }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous"></script>
+    <script src="semantic/semantic.min.js"></script>
+    <script src="https://openlayers.org/en/v4.6.5/build/ol.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <div class="ui grid container">
+      <div class="fourteen wide column">
+        <a href="/">
+        <h1 class="ui header">
+          <img class="ui image" src="/pin.png">
+          <div class="content">Bijenkasten
+            <div class="sub header">Waar staan bijenkasten in regio Nijmegen</div>
+          </div>
+        </h1>
+        </a>
+      </div>
+      <div class="fourteen wide column">
+        <div id="map" class="map"></div>
+        <div id="popup" class="ol-popup">
+          <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+          <div class="content">
+            <ul class="ui list" id="hives-list"></ul>
+            <div class="ui divider"></div>
+            <a href="" id="popup-link" class="ui basic button">
+              <i class="plus circle icon"></i>
+              Kast indienen
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      /**
+       * Elements that make up the popup.
+       */
+      var container = document.getElementById('popup');
+      var link = document.getElementById('popup-link');
+      var list = document.getElementById('hives-list');
+      var closer = document.getElementById('popup-closer');
+
+      /**
+       * Create an overlay to anchor the popup to the map.
+       */
+      var popupOverlay = new ol.Overlay({
+        element: container,
+        autoPan: true,
+        autoPanAnimation: {
+          duration: 250
+        }
+      });
+
+      /**
+       * Add a click handler to hide the popup.
+       * @return {boolean} Don't follow the href.
+       */
+      closer.onclick = function() {
+        popupOverlay.setPosition(undefined);
+        closer.blur();
+        return false;
+      };
+
+      var _styleFunction = function(feature) {
+        var size = feature.get('features').length;
+        return new ol.style.Style({
+          image: new ol.style.RegularShape({
+            radius: 16,
+            points: 6,
+            stroke: new ol.style.Stroke({ color: '#fff' }),
+            fill: new ol.style.Fill({ color: '#3399CC' })
+          }),
+          text: new ol.style.Text({
+            text: size.toString(),
+            fill: new ol.style.Fill({ color: '#fff' })
+          })
+        });
+      };
+
+      var raster = new ol.layer.Tile({ source: new ol.source.OSM() });
+      var hives = new ol.source.Cluster({
+        distance: 40,
+        source: new ol.source.Vector({
+          url: '/proposed_nodes.kml',
+          format: new ol.format.KML({ extractStyles: false })
+        })
+      });
+
+      var vector = new ol.layer.Vector({
+        source: hives,
+        style: _styleFunction
+      });
+
+      var map = new ol.Map({
+        target: 'map',
+        layers: [raster, vector],
+        overlays: [popupOverlay],
+        view: new ol.View({
+          center: ol.proj.fromLonLat([5.859690,51.841832]),
+          zoom: 12
+        })
+      });
+
+      map.on('click', function(evt) {
+        var coordinate = evt.coordinate;
+        var lonLat = ol.proj.toLonLat(coordinate);
+        link.href = '/nodes/new?lat='+ lonLat[1] +'&lon='+ lonLat[0];
+
+        list.innerHTML = "";
+
+        var cluster = map.forEachFeatureAtPixel(evt.pixel, function(cluster) {
+          return cluster;
+        });
+
+        var hist = {};
+        if(cluster) {
+          cluster.get('features').forEach( function(feature) {
+            name = feature.get('name');
+            if (name in hist) {
+              hist[name] ++;
+            }
+            else {
+              hist[name] = 1;
+            }
+          });
+
+          Object.keys(hist).forEach(function(key) {
+            list.innerHTML += '<div class="item"><i class="map marker icon"></i>' +
+              '<div class="content"><a class="header">'+ key +' (' + hist[key] + ')</a></div>' +
+              '</div>';
+          });
+        }
+        popupOverlay.setPosition(coordinate);
+      });
+    </script>
+  </body>
+</html>

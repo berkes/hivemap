@@ -16,7 +16,10 @@ task run_processors: :environment do
   HiveMap.projections_database.disconnect
 
   esps = [
-    HiveMap::Projections::ProposedNodes::Projector.new
+    HiveMap::Projections::ProposedNodes::Projector.new,
+    HiveMap::Projections::ProposedNodesKml::Projector.new(
+      tracker: EventSourcery::Memory::Tracker.new
+    )
   ]
 
   # The ESPRunner will fork child processes for each of the ESPs passed to it.

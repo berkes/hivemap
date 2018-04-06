@@ -7,6 +7,7 @@ require_relative '../app/events/node_added.rb'
 require_relative '../app/commands/node/add.rb'
 require_relative '../app/aggregates/node.rb'
 require_relative '../app/projections/proposed_nodes.rb'
+require_relative '../app/projections/proposed_nodes_kml.rb'
 require_relative '../app/projections/query.rb'
 
 # Monkey patch
@@ -23,6 +24,7 @@ UnprocessableEntity = Class.new(StandardError)
 BadRequest = Class.new(StandardError)
 
 set :public_folder, 'public'
+set :views, File.join(settings.root, '..', 'app', 'web', 'views')
 # Ensure our error handlers are triggered in development
 set :show_exceptions, :after_handler
 
@@ -52,10 +54,12 @@ def json_params
   ]
 end
 
-post '/nodes/:node_id' do
-  command = HiveMap::Commands::Node::Add::Command.build(json_params)
-  HiveMap::Commands::Node::Add::CommandHandler.new.handle(command)
-  status 201
+get '/', provides: :html do
+  erb :index
+end
+
+get '/nodes/new' do
+  erb :nodes_new
 end
 
 get '/nodes/proposed' do
@@ -63,6 +67,12 @@ get '/nodes/proposed' do
     HiveMap::Projections::Proposed::Query.handle
   )
   status 200
+end
+
+post '/nodes/:node_id' do
+  command = HiveMap::Commands::Node::Add::Command.build(json_params)
+  HiveMap::Commands::Node::Add::CommandHandler.new.handle(command)
+  status 201
 end
 
 ## Core namespace for the app

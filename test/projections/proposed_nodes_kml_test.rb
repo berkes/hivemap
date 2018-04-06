@@ -56,7 +56,7 @@ describe HiveMap::Projections::ProposedNodesKml::Projector do
       event.body['contact_details'] = nil
       subject.process(event)
       descriptions = xml_doc.xpath('//xmlns:description')
-      assert_empty(descriptions.text)
+      assert_empty(descriptions.text.strip)
     end
 
     it 'sanitizes PlaceMark description' do
